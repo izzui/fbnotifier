@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html ng-app="fbNotifier">
+  <head>
+    <title>Facebook Notifier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/ng-grid.min.css" rel="stylesheet" media="screen">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>   
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script> 
+    <script src="js/ng-grid-2.0.7.min.js"></script>
+
+    <script src="app/app.js"></script>
+
+    <style>
+      .gridStyle {
+          border: 1px solid rgb(212,212,212);
+          width: 100%; 
+          height: 300px;
+          overflow: scroll;
+      }
+    </style>
+  </head>
+  <body>
+
+    <form role="form" ng-controller="NotifierCtrl">
+      <div class="form-group">
+      <label>App Token</label>
+      <input ng-model="appToken" name="txtToken" class="form-control" required placeholder="App Token">
+      </div>
+
+      <div class="form-group">
+      <label>Notification Text</label>
+      <textarea ng-model="text" name="txtText" class="form-control" required placeholder="Hello @USER" rows="2"></textarea>
+      <span>{{text.length}} characters (max: 180)</span>
+      </div>
+
+      <div class="form-group">
+      <label>Notification URL</label>
+      <input ng-model="url" name="txtUrl" class="form-control" required placeholder="/Course/Details/160305?campaign_name=CAMPAIGN"></textarea>
+      </div>
+
+      <div class="form-group">
+      <label>Users to notify</label>
+      <textarea ng-model="users" name="txtUsers" class="form-control" required placeholder="To notify" rows="6"></textarea>
+      <span>{{users.split("\n").length}} users</span>
+      </div>
+
+      <div class="form-group">
+      <button type="submit" name="btnSubmit" ng-click="startStopNotifications()" class="btn btn-default" ng-bind="button"></button>
+      <span>{{notifications.length}} / {{total}} notifications</span>
+      </div>
+
+      <div ng-grid="grid" class="gridStyle form-control"></div>
+    </form>
+
+
+  </body>
+</html>
