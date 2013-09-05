@@ -11,6 +11,19 @@
       data: 'notifications'
     };
     $scope.button = "Start!";
+    $scope.startStopNotifications = function(form) {
+      var users;
+      if ($scope.button === "Start!" && form.$valid === true) {
+        $scope.button = "Notifying... (PRESS AGAIN TO STOP)";
+        users = $scope.users.split("\n");
+        $scope.total = users.length;
+        return notify(users);
+      } else {
+        if ($scope.button !== "Start!") {
+          return $scope.button = "Stopping...";
+        }
+      }
+    };
     logNotification = function(user, status) {
       return $scope.notifications.push({
         user: user,
@@ -28,7 +41,7 @@
         return $scope.button = "Start!";
       }
     };
-    notify = function(users) {
+    return notify = function(users) {
       var user;
       user = nextUser(users);
       $scope.users = users.join("\n");
@@ -40,26 +53,20 @@
         return endOrContinue(users);
       });
     };
-    return $scope.startStopNotifications = function(form) {
-      var users;
-      if ($scope.button === "Start!" && form.$valid === true) {
-        $scope.button = "Notifying... (PRESS AGAIN TO STOP)";
-        users = $scope.users.split("\n");
-        $scope.total = users.length;
-        return notify(users);
-      } else {
-        if ($scope.button !== "Start!") {
-          return $scope.button = "Stopping...";
-        }
-      }
-    };
   }).service('notificationSvc', function($http) {
     return this.notify = function(token, user, url, text, ref) {
       if (ref == null) {
         ref = "";
       }
       text = text.replace('@USER', "@[" + user + "]");
-      return $http.post(("https://graph.facebook.com/" + user) + ("/notifications?access_token=" + token) + ("&template=" + text + "&href=" + url + "&ref=" + ref));
+      return $http.post("https://graph.facebook.com/" + user + "/notifications", null, {
+        params: {
+          access_token: token,
+          template: text,
+          href: url,
+          ref: ref
+        }
+      });
     };
   });
 

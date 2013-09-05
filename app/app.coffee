@@ -8,6 +8,15 @@ app = angular.module('fbNotifier', ['ngGrid'])
 	$scope.grid = { data: 'notifications' }
 	$scope.button = "Start!"
 	
+	$scope.startStopNotifications = (form) ->
+		if $scope.button is "Start!" and form.$valid is true
+			$scope.button = "Notifying... (PRESS AGAIN TO STOP)"
+			users = $scope.users.split("\n")
+			$scope.total = users.length
+			notify(users)
+		else
+			$scope.button = "Stopping..." if $scope.button isnt "Start!"
+
 	logNotification = (user, status) ->
 		$scope.notifications.push({ user: user, status: status, time: $filter('date')(Date.now(), "mediumTime")})
 	
@@ -32,18 +41,8 @@ app = angular.module('fbNotifier', ['ngGrid'])
 				logNotification(user, if err.error? then err.error.message else "Unknown error - see browser console" )
 				endOrContinue(users)
 
-	$scope.startStopNotifications = (form) ->
-		if $scope.button is "Start!" and form.$valid is true
-			$scope.button = "Notifying... (PRESS AGAIN TO STOP)"
-			users = $scope.users.split("\n")
-			$scope.total = users.length
-			notify(users)
-		else
-			$scope.button = "Stopping..." if $scope.button isnt "Start!"
-
 .service 'notificationSvc', ($http) ->
 	@notify = (token, user, url, text, ref = "") ->
 		text = text.replace('@USER', "@[#{user}]")
-		$http.post "https://graph.facebook.com/#{user}" +
-				   	"/notifications?access_token=#{token}" + 
-					"&template=#{text}&href=#{url}&ref=#{ref}"
+		$http.post "https://graph.facebook.com/#{user}/notifications", null,
+					{ params: { access_token: token, template: text, href: url, ref: ref} }
